@@ -1,4 +1,4 @@
-package matcher
+package backend
 
 import (
 	"path/filepath"

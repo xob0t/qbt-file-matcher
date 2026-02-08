@@ -16,12 +16,12 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 import * as $models from "./models.js";
 
 /**
- * DirectoryExists checks if a directory exists
+ * DirExists checks if a directory exists
  * @param {string} path
  * @returns {$CancellablePromise<boolean>}
  */
-export function DirectoryExists(path) {
-    return $Call.ByID(969128502, path);
+export function DirExists(path) {
+    return $Call.ByID(1916444002, path);
 }
 
 /**
@@ -30,36 +30,36 @@ export function DirectoryExists(path) {
  * @returns {$CancellablePromise<$models.MatchResponse>}
  */
 export function FindMatches(req) {
-    return $Call.ByID(2305065193, req).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(476527029, req).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType0($result);
     }));
 }
 
 /**
- * GenerateRenames generates rename operations based on matches
+ * GenRenames generates rename operations based on matches
  * @param {$models.RenameRequest} req
- * @returns {$CancellablePromise<$models.RenameOperation[]>}
+ * @returns {$CancellablePromise<$models.RenameOp[]>}
  */
-export function GenerateRenames(req) {
-    return $Call.ByID(3464538835, req).then(/** @type {($result: any) => any} */(($result) => {
+export function GenRenames(req) {
+    return $Call.ByID(2833719546, req).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType2($result);
     }));
 }
 
 /**
- * ScanDirectory scans a directory and returns all files
+ * ScanDir scans a directory and returns all files
  * @param {string} path
  * @returns {$CancellablePromise<$models.DiskFileInfo[]>}
  */
-export function ScanDirectory(path) {
-    return $Call.ByID(2011767925, path).then(/** @type {($result: any) => any} */(($result) => {
+export function ScanDir(path) {
+    return $Call.ByID(3958135217, path).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType4($result);
     }));
 }
 
 // Private type creation functions
 const $$createType0 = $models.MatchResponse.createFrom;
-const $$createType1 = $models.RenameOperation.createFrom;
+const $$createType1 = $models.RenameOp.createFrom;
 const $$createType2 = $Create.Array($$createType1);
 const $$createType3 = $models.DiskFileInfo.createFrom;
 const $$createType4 = $Create.Array($$createType3);

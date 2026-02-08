@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { QBitService } from '../../bindings/qbittorrent-file-matcher'
+import { QBitService } from '../../bindings/qbittorrent-file-matcher/backend'
 import type { ConnectionInfo } from '../App'
 
 interface StatusBarProps {

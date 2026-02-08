@@ -11,12 +11,14 @@ export {
 
 export {
     ConnectionConfig,
+    DiskFile,
     DiskFileInfo,
     MatchInfo,
     MatchRequest,
     MatchResponse,
-    RenameOperation,
+    RenameOp,
     RenameRequest,
+    TorrentFile,
     TorrentFileInfo,
     TorrentInfo
 } from "./models.js";

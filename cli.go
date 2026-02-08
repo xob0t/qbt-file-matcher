@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"qbittorrent-file-matcher/internal/matcher"
+	"qbittorrent-file-matcher/backend"
 )
 
 // CLI config for match command
@@ -31,7 +31,7 @@ func runMatchCommand() {
 	}
 
 	// Load config file first (command line args will override)
-	savedConfig, err := LoadConfig()
+	savedConfig, err := backend.LoadConfig()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: failed to load config file: %v\n", err)
 	} else if savedConfig != nil {
@@ -90,7 +90,7 @@ func runMatchCommand() {
 
 	// Save config if requested
 	if saveConfig && config.url != "" {
-		err := SaveConfig(&Config{
+		err := backend.SaveConfig(&backend.Config{
 			URL:      config.url,
 			Username: config.username,
 			Password: config.password,
@@ -98,7 +98,7 @@ func runMatchCommand() {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Warning: failed to save config: %v\n", err)
 		} else {
-			fmt.Printf("Config saved to %s\n", GetConfigPath())
+			fmt.Printf("Config saved to %s\n", backend.GetConfigPath())
 		}
 	}
 
@@ -133,8 +133,8 @@ func executeMatch(config matchConfig) error {
 	// Connect to qBittorrent
 	fmt.Printf("Connecting to qBittorrent at %s...\n", config.url)
 
-	qbitService := &QBitService{}
-	err := qbitService.Connect(ConnectionConfig{
+	qbitService := &backend.QBitService{}
+	err := qbitService.Connect(backend.ConnectionConfig{
 		URL:      config.url,
 		Username: config.username,
 		Password: config.password,
@@ -154,35 +154,25 @@ func executeMatch(config matchConfig) error {
 
 	// Scan directory
 	fmt.Printf("Scanning directory %s...\n", config.path)
-	matcherService := &MatcherService{}
-	diskFiles, err := matcherService.ScanDirectory(config.path)
+	diskFiles, err := backend.ScanDirectory(config.path)
 	if err != nil {
 		return fmt.Errorf("failed to scan directory: %w", err)
 	}
 	fmt.Printf("Found %d files on disk\n", len(diskFiles))
 
-	// Convert to matcher types
-	torrentFileInfos := make([]matcher.TorrentFileInfo, len(torrentFiles))
+	// Convert to backend types
+	torrentFileInfos := make([]backend.TorrentFileInfo, len(torrentFiles))
 	for i, f := range torrentFiles {
-		torrentFileInfos[i] = matcher.TorrentFileInfo{
+		torrentFileInfos[i] = backend.TorrentFileInfo{
 			Index: f.Index,
 			Name:  f.Name,
 			Size:  f.Size,
 		}
 	}
 
-	diskFileInfos := make([]matcher.DiskFile, len(diskFiles))
-	for i, f := range diskFiles {
-		diskFileInfos[i] = matcher.DiskFile{
-			Path: f.Path,
-			Name: f.Name,
-			Size: f.Size,
-		}
-	}
-
 	// Find matches
 	fmt.Println("Finding matches...")
-	matchResult := matcher.FindMatches(torrentFileInfos, diskFileInfos, config.sameExtension)
+	matchResult := backend.FindMatches(torrentFileInfos, diskFiles, config.sameExtension)
 
 	// Handle interactive selection for files with multiple candidates
 	if !config.autoSelect && !config.dryRun {
@@ -192,7 +182,7 @@ func executeMatch(config matchConfig) error {
 	fmt.Printf("Matched: %d, Unmatched: %d\n", matchResult.MatchedCount, len(matchResult.Unmatched))
 
 	// Generate renames
-	renames := matcher.GenerateRenames(matchResult.Matches, config.path)
+	renames := backend.GenerateRenames(matchResult.Matches, config.path)
 
 	renamesApplied := false
 	if len(renames) == 0 {
@@ -282,7 +272,7 @@ func executeMatch(config matchConfig) error {
 }
 
 // handleInteractiveSelection prompts user to select files when there are multiple candidates
-func handleInteractiveSelection(matchResult matcher.MatchResult) matcher.MatchResult {
+func handleInteractiveSelection(matchResult backend.MatchResult) backend.MatchResult {
 	reader := bufio.NewReader(os.Stdin)
 
 	for i := range matchResult.Matches {

@@ -15,7 +15,7 @@ import {
   ItemGroup,
 } from '@/components/ui/item'
 import { toast } from 'sonner'
-import { QBitService } from '../../bindings/qbittorrent-file-matcher'
+import { QBitService } from '../../bindings/qbittorrent-file-matcher/backend'
 import type { TorrentInfo } from '../App'
 
 interface TorrentListProps {

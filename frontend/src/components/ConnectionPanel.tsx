@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { QBitService } from '../../bindings/qbittorrent-file-matcher'
+import { QBitService } from '../../bindings/qbittorrent-file-matcher/backend'
 import type { ConnectionInfo } from '../App'
 
 interface ConnectionPanelProps {

@@ -2,36 +2,20 @@ package main
 
 import (
 	"embed"
-	"encoding/json"
 	"fmt"
 	"os"
 	"slices"
+
+	"qbittorrent-file-matcher/backend"
 )
 
 //go:embed build/windows/info.json
 var versionInfo embed.FS
 
-type versionInfoJSON struct {
-	Fixed struct {
-		FileVersion string `json:"file_version"`
-	} `json:"fixed"`
-}
-
 // getAppVersion returns version from embedded info.json
 func getAppVersion() string {
-	data, err := versionInfo.ReadFile("build/windows/info.json")
-	if err != nil {
-		return "unknown"
-	}
-	var info versionInfoJSON
-	if err := json.Unmarshal(data, &info); err != nil {
-		return "unknown"
-	}
-	return info.Fixed.FileVersion
+	return backend.GetVersion(versionInfo)
 }
-
-// appVersion for backward compatibility
-var appVersion = getAppVersion()
 
 func isCLICommand(arg string) bool {
 	supportedCommands := []string{
@@ -72,7 +56,7 @@ func runCLI() {
 		printCLIHelp()
 
 	case "version", "--version", "-v":
-		fmt.Printf("qbittorrent-file-matcher v%s\n", appVersion)
+		fmt.Printf("qbittorrent-file-matcher v%s\n", getAppVersion())
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown command '%s'\n\n", command)
@@ -121,7 +105,7 @@ func printMatchHelp() {
 	fmt.Println("Config file:")
 	fmt.Println("  Connection settings (URL, username, password) can be saved to a config file.")
 	fmt.Println("  Use --save-config to save settings, or use 'config set' command.")
-	fmt.Println("  Config file location:", GetConfigPath())
+	fmt.Println("  Config file location:", backend.GetConfigPath())
 	fmt.Println()
 	fmt.Println("Interactive mode:")
 	fmt.Println("  When multiple files match the same size, you'll be prompted to select one.")
@@ -163,14 +147,14 @@ func runConfigCommand() {
 
 	switch subcommand {
 	case "show":
-		config, err := LoadConfig()
+		config, err := backend.LoadConfig()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error loading config: %v\n", err)
 			os.Exit(1)
 		}
 		if config == nil {
 			fmt.Println("No configuration file found")
-			fmt.Printf("Config file path: %s\n", GetConfigPath())
+			fmt.Printf("Config file path: %s\n", backend.GetConfigPath())
 			return
 		}
 		fmt.Println("Current configuration:")
@@ -181,12 +165,12 @@ func runConfigCommand() {
 		} else {
 			fmt.Printf("  Password: (not set)\n")
 		}
-		fmt.Printf("\nConfig file: %s\n", GetConfigPath())
+		fmt.Printf("\nConfig file: %s\n", backend.GetConfigPath())
 
 	case "set":
-		config, _ := LoadConfig()
+		config, _ := backend.LoadConfig()
 		if config == nil {
-			config = &Config{}
+			config = &backend.Config{}
 		}
 
 		// Parse flags
@@ -211,14 +195,14 @@ func runConfigCommand() {
 			}
 		}
 
-		if err := SaveConfig(config); err != nil {
+		if err := backend.SaveConfig(config); err != nil {
 			fmt.Fprintf(os.Stderr, "Error saving config: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Configuration saved to %s\n", GetConfigPath())
+		fmt.Printf("Configuration saved to %s\n", backend.GetConfigPath())
 
 	case "clear":
-		configPath := GetConfigPath()
+		configPath := backend.GetConfigPath()
 		if err := os.Remove(configPath); err != nil {
 			if os.IsNotExist(err) {
 				fmt.Println("No configuration file to remove")
@@ -230,7 +214,7 @@ func runConfigCommand() {
 		fmt.Println("Configuration file removed")
 
 	case "path":
-		fmt.Println(GetConfigPath())
+		fmt.Println(backend.GetConfigPath())
 
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown config command: %s\n\n", subcommand)

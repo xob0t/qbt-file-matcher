@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 import { Dialogs } from '@wailsio/runtime'
-import { QBitService, MatcherService } from '../../bindings/qbittorrent-file-matcher'
+import { QBitService, MatcherService } from '../../bindings/qbittorrent-file-matcher/backend'
 import type { TorrentInfo } from '../App'
 
 interface MatchingPanelProps {
@@ -104,14 +104,14 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
 
     setIsScanning(true)
     try {
-      const exists = await MatcherService.DirectoryExists(searchPath)
+      const exists = await MatcherService.DirExists(searchPath)
       if (!exists) {
         toast.error('Directory not found')
         setIsScanning(false)
         return
       }
 
-      const diskFiles = await MatcherService.ScanDirectory(searchPath)
+      const diskFiles = await MatcherService.ScanDir(searchPath)
       toast.info(`Found ${diskFiles.length} files on disk`)
 
       const torrentFileInfos = torrentFiles.map(f => ({
@@ -187,7 +187,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
     let errorCount = 0
 
     try {
-      const renames = await MatcherService.GenerateRenames({
+      const renames = await MatcherService.GenRenames({
         matches: matchesWithSelection,
         searchPath: searchPath,
       })
@@ -377,7 +377,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
                 onClick={async () => {
                   try {
                     // Only set Directory if it exists, otherwise let dialog use default
-                    const dirExists = searchPath ? await MatcherService.DirectoryExists(searchPath) : false
+                    const dirExists = searchPath ? await MatcherService.DirExists(searchPath) : false
                     const path = await Dialogs.OpenFile({
                       CanChooseDirectories: true,
                       CanChooseFiles: false,

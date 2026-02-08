@@ -6,10 +6,6 @@
 // @ts-ignore: Unused imports
 import { Create as $Create } from "@wailsio/runtime";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unused imports
-import * as matcher$0 from "./internal/matcher/models.js";
-
 /**
  * ConnectionConfig represents connection settings
  */
@@ -52,6 +48,51 @@ export class ConnectionConfig {
     static createFrom($$source = {}) {
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         return new ConnectionConfig(/** @type {Partial<ConnectionConfig>} */($$parsedSource));
+    }
+}
+
+/**
+ * DiskFile represents a file on the disk
+ */
+export class DiskFile {
+    /**
+     * Creates a new DiskFile instance.
+     * @param {Partial<DiskFile>} [$$source = {}] - The source object to create the DiskFile.
+     */
+    constructor($$source = {}) {
+        if (!("path" in $$source)) {
+            /**
+             * @member
+             * @type {string}
+             */
+            this["path"] = "";
+        }
+        if (!("name" in $$source)) {
+            /**
+             * @member
+             * @type {string}
+             */
+            this["name"] = "";
+        }
+        if (!("size" in $$source)) {
+            /**
+             * @member
+             * @type {number}
+             */
+            this["size"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new DiskFile instance from a string or object.
+     * @param {any} [$$source = {}]
+     * @returns {DiskFile}
+     */
+    static createFrom($$source = {}) {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new DiskFile(/** @type {Partial<DiskFile>} */($$parsedSource));
     }
 }
 
@@ -112,21 +153,21 @@ export class MatchInfo {
         if (!("torrentFile" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.TorrentFileInfo}
+             * @type {TorrentFileInfo}
              */
-            this["torrentFile"] = (new matcher$0.TorrentFileInfo());
+            this["torrentFile"] = (new TorrentFileInfo());
         }
         if (!("diskFiles" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.DiskFile[]}
+             * @type {DiskFile[]}
              */
             this["diskFiles"] = [];
         }
         if (!("selected" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.DiskFile | null}
+             * @type {DiskFile | null}
              */
             this["selected"] = null;
         }
@@ -176,14 +217,14 @@ export class MatchRequest {
         if (!("torrentFiles" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.TorrentFileInfo[]}
+             * @type {TorrentFileInfo[]}
              */
             this["torrentFiles"] = [];
         }
         if (!("diskFiles" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.DiskFile[]}
+             * @type {DiskFile[]}
              */
             this["diskFiles"] = [];
         }
@@ -236,7 +277,7 @@ export class MatchResponse {
         if (!("unmatched" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.TorrentFileInfo[]}
+             * @type {TorrentFileInfo[]}
              */
             this["unmatched"] = [];
         }
@@ -278,12 +319,12 @@ export class MatchResponse {
 }
 
 /**
- * RenameOperation represents a single rename operation
+ * RenameOp represents a single rename operation
  */
-export class RenameOperation {
+export class RenameOp {
     /**
-     * Creates a new RenameOperation instance.
-     * @param {Partial<RenameOperation>} [$$source = {}] - The source object to create the RenameOperation.
+     * Creates a new RenameOp instance.
+     * @param {Partial<RenameOp>} [$$source = {}] - The source object to create the RenameOp.
      */
     constructor($$source = {}) {
         if (!("oldPath" in $$source)) {
@@ -303,25 +344,25 @@ export class RenameOperation {
         if (!("torrentFile" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.TorrentFileInfo}
+             * @type {TorrentFileInfo}
              */
-            this["torrentFile"] = (new matcher$0.TorrentFileInfo());
+            this["torrentFile"] = (new TorrentFileInfo());
         }
         if (!("diskFile" in $$source)) {
             /**
              * @member
-             * @type {matcher$0.DiskFile}
+             * @type {DiskFile}
              */
-            this["diskFile"] = (new matcher$0.DiskFile());
+            this["diskFile"] = (new DiskFile());
         }
 
         Object.assign(this, $$source);
     }
 
     /**
-     * Creates a new RenameOperation instance from a string or object.
+     * Creates a new RenameOp instance from a string or object.
      * @param {any} [$$source = {}]
-     * @returns {RenameOperation}
+     * @returns {RenameOp}
      */
     static createFrom($$source = {}) {
         const $$createField2_0 = $$createType0;
@@ -333,7 +374,7 @@ export class RenameOperation {
         if ("diskFile" in $$parsedSource) {
             $$parsedSource["diskFile"] = $$createField3_0($$parsedSource["diskFile"]);
         }
-        return new RenameOperation(/** @type {Partial<RenameOperation>} */($$parsedSource));
+        return new RenameOp(/** @type {Partial<RenameOp>} */($$parsedSource));
     }
 }
 
@@ -382,10 +423,10 @@ export class RenameRequest {
 /**
  * TorrentFileInfo represents a file in a torrent for the frontend
  */
-export class TorrentFileInfo {
+export class TorrentFile {
     /**
-     * Creates a new TorrentFileInfo instance.
-     * @param {Partial<TorrentFileInfo>} [$$source = {}] - The source object to create the TorrentFileInfo.
+     * Creates a new TorrentFile instance.
+     * @param {Partial<TorrentFile>} [$$source = {}] - The source object to create the TorrentFile.
      */
     constructor($$source = {}) {
         if (!("index" in $$source)) {
@@ -415,6 +456,51 @@ export class TorrentFileInfo {
              * @type {number}
              */
             this["progress"] = 0;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new TorrentFile instance from a string or object.
+     * @param {any} [$$source = {}]
+     * @returns {TorrentFile}
+     */
+    static createFrom($$source = {}) {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new TorrentFile(/** @type {Partial<TorrentFile>} */($$parsedSource));
+    }
+}
+
+/**
+ * TorrentFileInfo represents a file from a torrent that needs matching
+ */
+export class TorrentFileInfo {
+    /**
+     * Creates a new TorrentFileInfo instance.
+     * @param {Partial<TorrentFileInfo>} [$$source = {}] - The source object to create the TorrentFileInfo.
+     */
+    constructor($$source = {}) {
+        if (!("index" in $$source)) {
+            /**
+             * @member
+             * @type {number}
+             */
+            this["index"] = 0;
+        }
+        if (!("name" in $$source)) {
+            /**
+             * @member
+             * @type {string}
+             */
+            this["name"] = "";
+        }
+        if (!("size" in $$source)) {
+            /**
+             * @member
+             * @type {number}
+             */
+            this["size"] = 0;
         }
 
         Object.assign(this, $$source);
@@ -505,8 +591,8 @@ export class TorrentInfo {
 }
 
 // Private type creation functions
-const $$createType0 = matcher$0.TorrentFileInfo.createFrom;
-const $$createType1 = matcher$0.DiskFile.createFrom;
+const $$createType0 = TorrentFileInfo.createFrom;
+const $$createType1 = DiskFile.createFrom;
 const $$createType2 = $Create.Array($$createType1);
 const $$createType3 = $Create.Nullable($$createType1);
 const $$createType4 = $Create.Array($$createType0);

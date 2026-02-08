@@ -21,7 +21,7 @@ import * as $models from "./models.js";
  * @returns {$CancellablePromise<void>}
  */
 export function Connect(config) {
-    return $Call.ByID(2541156495, config);
+    return $Call.ByID(2643120139, config);
 }
 
 /**
@@ -29,16 +29,16 @@ export function Connect(config) {
  * @returns {$CancellablePromise<void>}
  */
 export function Disconnect() {
-    return $Call.ByID(1241630081);
+    return $Call.ByID(2108215021);
 }
 
 /**
  * GetTorrentFiles returns files for a specific torrent
  * @param {string} hash
- * @returns {$CancellablePromise<$models.TorrentFileInfo[]>}
+ * @returns {$CancellablePromise<$models.TorrentFile[]>}
  */
 export function GetTorrentFiles(hash) {
-    return $Call.ByID(2664721056, hash).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(1264571836, hash).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType1($result);
     }));
 }
@@ -48,7 +48,7 @@ export function GetTorrentFiles(hash) {
  * @returns {$CancellablePromise<$models.TorrentInfo[]>}
  */
 export function GetTorrents() {
-    return $Call.ByID(537742322).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(3031147382).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType3($result);
     }));
 }
@@ -58,7 +58,7 @@ export function GetTorrents() {
  * @returns {$CancellablePromise<string>}
  */
 export function GetVersion() {
-    return $Call.ByID(507000807);
+    return $Call.ByID(1877302715);
 }
 
 /**
@@ -66,7 +66,7 @@ export function GetVersion() {
  * @returns {$CancellablePromise<boolean>}
  */
 export function IsConnected() {
-    return $Call.ByID(2935823650);
+    return $Call.ByID(3015515214);
 }
 
 /**
@@ -75,7 +75,7 @@ export function IsConnected() {
  * @returns {$CancellablePromise<void>}
  */
 export function RecheckTorrent(hash) {
-    return $Call.ByID(474061148, hash);
+    return $Call.ByID(3112118224, hash);
 }
 
 /**
@@ -86,7 +86,7 @@ export function RecheckTorrent(hash) {
  * @returns {$CancellablePromise<void>}
  */
 export function RenameFile(hash, oldPath, newPath) {
-    return $Call.ByID(3420300407, hash, oldPath, newPath);
+    return $Call.ByID(471807579, hash, oldPath, newPath);
 }
 
 /**
@@ -99,7 +99,7 @@ export function RenameFile(hash, oldPath, newPath) {
  * @returns {$CancellablePromise<void>}
  */
 export function SetFilePriority(hash, fileIDs, priority) {
-    return $Call.ByID(3045938327, hash, fileIDs, priority);
+    return $Call.ByID(1984806499, hash, fileIDs, priority);
 }
 
 /**
@@ -109,11 +109,11 @@ export function SetFilePriority(hash, fileIDs, priority) {
  * @returns {$CancellablePromise<void>}
  */
 export function SetTorrentLocation(hash, location) {
-    return $Call.ByID(303992562, hash, location);
+    return $Call.ByID(1731436990, hash, location);
 }
 
 // Private type creation functions
-const $$createType0 = $models.TorrentFileInfo.createFrom;
+const $$createType0 = $models.TorrentFile.createFrom;
 const $$createType1 = $Create.Array($$createType0);
 const $$createType2 = $models.TorrentInfo.createFrom;
 const $$createType3 = $Create.Array($$createType2);

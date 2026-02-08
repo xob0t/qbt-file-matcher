@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 
+	"qbittorrent-file-matcher/backend"
+
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
@@ -29,8 +31,8 @@ func main() {
 
 func runGUI() {
 	// Create service instances
-	qbitService := &QBitService{}
-	matcherService := &MatcherService{}
+	qbitService := &backend.QBitService{}
+	matcherService := &backend.MatcherService{}
 
 	// Create the application
 	app := application.New(application.Options{
@@ -50,7 +52,7 @@ func runGUI() {
 
 	// Create the main window
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title:  fmt.Sprintf("qBittorrent File Matcher v%s", appVersion),
+		Title:  fmt.Sprintf("qBittorrent File Matcher v%s", getAppVersion()),
 		Width:  1200,
 		Height: 800,
 		Mac: application.MacWindow{

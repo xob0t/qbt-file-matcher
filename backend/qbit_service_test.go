@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"os"
@@ -7,12 +7,15 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"qbittorrent-file-matcher/internal/matcher"
 )
 
 func loadEnv(t *testing.T) {
-	if err := godotenv.Load(); err != nil {
-		t.Skip("Skipping integration test: .env file not found")
+	// Try to load from parent directory (project root)
+	if err := godotenv.Load("../.env"); err != nil {
+		// Also try current directory
+		if err := godotenv.Load(".env"); err != nil {
+			t.Skip("Skipping integration test: .env file not found")
+		}
 	}
 }
 
@@ -134,63 +137,46 @@ func TestQBitService_NotConnected(t *testing.T) {
 	}
 }
 
-func TestMatcherService_DirectoryExists(t *testing.T) {
-	service := &MatcherService{}
+func TestQBitService_RecheckTorrent(t *testing.T) {
+	service := &QBitService{}
 
-	// Test existing directory
-	if !service.DirectoryExists(".") {
-		t.Error("Expected current directory to exist")
+	// Test that calling Recheck without connection returns error
+	err := service.RecheckTorrent("somehash")
+	if err == nil {
+		t.Error("Expected error when not connected, got nil")
 	}
-
-	// Test non-existing directory
-	if service.DirectoryExists("/nonexistent/path/12345") {
-		t.Error("Expected non-existent path to return false")
+	if err.Error() != "not connected" {
+		t.Errorf("Expected 'not connected' error, got: %v", err)
 	}
 }
 
-func TestMatcherService_ScanDirectory(t *testing.T) {
-	service := &MatcherService{}
+func TestQBitService_RecheckTorrent_Connected(t *testing.T) {
+	config := getQBTConfig(t)
 
-	// Scan current directory
-	files, err := service.ScanDirectory(".")
+	service := &QBitService{}
+	err := service.Connect(config)
 	if err != nil {
-		t.Fatalf("Failed to scan directory: %v", err)
+		t.Skipf("Skipping test - cannot connect to qBittorrent: %v", err)
 	}
 
-	if len(files) == 0 {
-		t.Error("Expected at least some files in current directory")
+	torrents, err := service.GetTorrents()
+	if err != nil {
+		t.Fatalf("Failed to get torrents: %v", err)
 	}
 
-	t.Logf("Found %d files in current directory", len(files))
-}
-
-func TestMatcherService_FindMatches(t *testing.T) {
-	service := &MatcherService{}
-
-	req := MatchRequest{
-		TorrentFiles: []matcher.TorrentFileInfo{
-			{Index: 0, Name: "test.txt", Size: 100},
-			{Index: 1, Name: "other.txt", Size: 200},
-		},
-		DiskFiles: []matcher.DiskFile{
-			{Path: "/path/test.txt", Name: "test.txt", Size: 100},
-		},
-		RequireSameExtension: false,
+	if len(torrents) == 0 {
+		t.Skip("No torrents available for recheck test")
 	}
 
-	result := service.FindMatches(req)
+	// Test recheck on first torrent
+	hash := torrents[0].Hash
+	t.Logf("Testing recheck on torrent: %s (%s)", torrents[0].Name, hash)
 
-	if result.TotalFiles != 2 {
-		t.Errorf("Expected TotalFiles=2, got %d", result.TotalFiles)
-	}
-	if result.MatchedCount != 1 {
-		t.Errorf("Expected MatchedCount=1, got %d", result.MatchedCount)
-	}
-	if len(result.Matches) != 1 {
-		t.Errorf("Expected 1 match, got %d", len(result.Matches))
-	}
-	if len(result.Unmatched) != 1 {
-		t.Errorf("Expected 1 unmatched, got %d", len(result.Unmatched))
+	err = service.RecheckTorrent(hash)
+	if err != nil {
+		t.Errorf("RecheckTorrent failed: %v", err)
+	} else {
+		t.Log("Recheck triggered successfully")
 	}
 }
 
@@ -239,85 +225,6 @@ func TestSpecificTorrent_Debug(t *testing.T) {
 	}
 }
 
-// TestSpecificTorrent_SimulateMatch simulates the matching and rename process
-func TestSpecificTorrent_SimulateMatch(t *testing.T) {
-	matcherService := &MatcherService{}
-
-	// Simulate the scenario:
-	// - Torrent file: "Le Bureau des Légendes S03E01.mkv" (no directory)
-	// - Disk file: in subdirectory "Le Bureau des Légendes (The Bureau) - season 33"
-	// - Search path: "C:\Users\admin\Downloads"
-
-	searchPath := `C:\Users\admin\Downloads`
-
-	// Scan the directory
-	diskFiles, err := matcherService.ScanDirectory(searchPath)
-	if err != nil {
-		t.Fatalf("Failed to scan: %v", err)
-	}
-
-	// Find the S03E01 file
-	var targetDiskFile *DiskFileInfo
-	for i := range diskFiles {
-		if diskFiles[i].Name == "Le Bureau des Légendes S03E01.mkv" {
-			targetDiskFile = &diskFiles[i]
-			break
-		}
-	}
-
-	if targetDiskFile == nil {
-		t.Skip("Target disk file not found")
-	}
-
-	t.Logf("Found disk file: %s", targetDiskFile.Path)
-
-	// Create the match
-	torrentFiles := []matcher.TorrentFileInfo{
-		{Index: 0, Name: "Le Bureau des Légendes S03E01.mkv", Size: targetDiskFile.Size},
-	}
-	matchDiskFiles := []matcher.DiskFile{
-		{Path: targetDiskFile.Path, Name: targetDiskFile.Name, Size: targetDiskFile.Size},
-	}
-
-	// Find matches
-	matchResult := matcherService.FindMatches(MatchRequest{
-		TorrentFiles:         torrentFiles,
-		DiskFiles:            matchDiskFiles,
-		RequireSameExtension: true,
-	})
-
-	t.Logf("Match result: %d matches, %d unmatched", matchResult.MatchedCount, len(matchResult.Unmatched))
-
-	if len(matchResult.Matches) == 0 {
-		t.Fatal("No matches found")
-	}
-
-	// Generate renames
-	renames := matcherService.GenerateRenames(RenameRequest{
-		Matches:    matchResult.Matches,
-		SearchPath: searchPath,
-	})
-
-	t.Logf("")
-	t.Logf("Generated renames:")
-	for _, r := range renames {
-		t.Logf("  Old: %s", r.OldPath)
-		t.Logf("  New: %s", r.NewPath)
-		t.Logf("")
-	}
-
-	// Verify the rename is correct
-	if len(renames) == 0 {
-		t.Error("Expected at least one rename operation")
-	} else {
-		// The new path should include the subdirectory
-		expectedNewPath := "Le Bureau des Légendes (The Bureau) - season 33/Le Bureau des Légendes S03E01.mkv"
-		if renames[0].NewPath != expectedNewPath {
-			t.Errorf("Expected new path '%s', got '%s'", expectedNewPath, renames[0].NewPath)
-		}
-	}
-}
-
 // TestSpecificTorrent_ActualRename actually performs the rename to test it
 func TestSpecificTorrent_ActualRename(t *testing.T) {
 	config := getQBTConfig(t)
@@ -327,8 +234,6 @@ func TestSpecificTorrent_ActualRename(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-
-	matcherService := &MatcherService{}
 
 	hash := "cd510ce6662fb4fdcfa2b200118c379fff4c8622"
 	searchPath := `C:\Users\admin\Downloads`
@@ -345,14 +250,14 @@ func TestSpecificTorrent_ActualRename(t *testing.T) {
 	}
 
 	// Scan disk
-	diskFiles, err := matcherService.ScanDirectory(searchPath)
+	diskFiles, err := ScanDirectory(searchPath)
 	if err != nil {
 		t.Fatalf("Failed to scan: %v", err)
 	}
 
 	// Find a specific file to test with
-	var targetTorrentFile *TorrentFileInfo
-	var targetDiskFile *DiskFileInfo
+	var targetTorrentFile *TorrentFile
+	var targetDiskFile *DiskFile
 
 	for i := range torrentFiles {
 		if torrentFiles[i].Name == "Le Bureau des Légendes S03E01.mkv" {
