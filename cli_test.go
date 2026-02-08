@@ -1,10 +1,7 @@
 package main
 
 import (
-	"path/filepath"
 	"testing"
-
-	"qbittorrent-file-matcher/backend"
 )
 
 func TestIsCLICommand(t *testing.T) {
@@ -13,7 +10,6 @@ func TestIsCLICommand(t *testing.T) {
 		expected bool
 	}{
 		{"match", true},
-		{"config", true},
 		{"help", true},
 		{"--help", true},
 		{"-h", true},
@@ -109,17 +105,4 @@ func TestGetAppVersion(t *testing.T) {
 		t.Errorf("getAppVersion returned invalid version: %q", version)
 	}
 	t.Logf("App version: %s", version)
-}
-
-func TestGetConfigPath_FromCLI(t *testing.T) {
-	path := backend.GetConfigPath()
-	if path == "" || path == "<unknown>" {
-		t.Error("GetConfigPath returned empty or unknown")
-	}
-
-	// Should end with config.json
-	if filepath.Base(path) != "config.json" {
-		t.Errorf("Expected config.json, got %s", filepath.Base(path))
-	}
-	t.Logf("Config path: %s", path)
 }

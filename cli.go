@@ -30,19 +30,7 @@ func runMatchCommand() {
 		sameExtension: true, // default
 	}
 
-	// Load config file first (command line args will override)
-	savedConfig, err := backend.LoadConfig()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Warning: failed to load config file: %v\n", err)
-	} else if savedConfig != nil {
-		config.url = savedConfig.URL
-		config.username = savedConfig.Username
-		config.password = savedConfig.Password
-	}
-
-	saveConfig := false
-
-	// Parse flags (override config file values)
+	// Parse flags
 	args := os.Args[2:]
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
@@ -83,28 +71,12 @@ func runMatchCommand() {
 			config.autoSelect = true
 		case "--recheck", "-r":
 			config.recheck = true
-		case "--save-config":
-			saveConfig = true
-		}
-	}
-
-	// Save config if requested
-	if saveConfig && config.url != "" {
-		err := backend.SaveConfig(&backend.Config{
-			URL:      config.url,
-			Username: config.username,
-			Password: config.password,
-		})
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Warning: failed to save config: %v\n", err)
-		} else {
-			fmt.Printf("Config saved to %s\n", backend.GetConfigPath())
 		}
 	}
 
 	// Validate required flags
 	if config.url == "" {
-		fmt.Fprintln(os.Stderr, "Error: --url is required (or set in config file)")
+		fmt.Fprintln(os.Stderr, "Error: --url is required")
 		os.Exit(1)
 	}
 	if config.hash == "" {
