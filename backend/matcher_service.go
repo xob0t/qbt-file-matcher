@@ -33,11 +33,7 @@ func (s *MatcherService) ScanDir(path string) ([]DiskFileInfo, error) {
 
 	result := make([]DiskFileInfo, len(files))
 	for i, f := range files {
-		result[i] = DiskFileInfo{
-			Path: f.Path,
-			Name: f.Name,
-			Size: f.Size,
-		}
+		result[i] = DiskFileInfo(f)
 	}
 
 	return result, nil
@@ -119,12 +115,7 @@ func (s *MatcherService) GenRenames(req RenameRequest) []RenameOp {
 
 	result := make([]RenameOp, len(renames))
 	for i, r := range renames {
-		result[i] = RenameOp{
-			OldPath:     r.OldPath,
-			NewPath:     r.NewPath,
-			TorrentFile: r.TorrentFile,
-			DiskFile:    r.DiskFile,
-		}
+		result[i] = RenameOp(r)
 	}
 
 	return result

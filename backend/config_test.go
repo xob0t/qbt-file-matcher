@@ -33,7 +33,7 @@ func TestSaveAndLoadConfig(t *testing.T) {
 
 		defer func() {
 			if hasExisting {
-				os.WriteFile(configPath, existingConfig, 0600)
+				_ = os.WriteFile(configPath, existingConfig, 0600)
 			} else {
 				os.Remove(configPath)
 			}
@@ -104,7 +104,7 @@ func TestConfigCommands_Integration(t *testing.T) {
 
 	defer func() {
 		if hasExisting {
-			os.WriteFile(configPath, existingConfig, 0600)
+			_ = os.WriteFile(configPath, existingConfig, 0600)
 		} else {
 			os.Remove(configPath)
 			// Also try to remove parent directory if empty
