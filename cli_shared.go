@@ -1,12 +1,37 @@
 package main
 
 import (
+	"embed"
+	"encoding/json"
 	"fmt"
 	"os"
 	"slices"
 )
 
-const appVersion = "1.0.0"
+//go:embed build/windows/info.json
+var versionInfo embed.FS
+
+type versionInfoJSON struct {
+	Fixed struct {
+		FileVersion string `json:"file_version"`
+	} `json:"fixed"`
+}
+
+// getAppVersion returns version from embedded info.json
+func getAppVersion() string {
+	data, err := versionInfo.ReadFile("build/windows/info.json")
+	if err != nil {
+		return "unknown"
+	}
+	var info versionInfoJSON
+	if err := json.Unmarshal(data, &info); err != nil {
+		return "unknown"
+	}
+	return info.Fixed.FileVersion
+}
+
+// appVersion for backward compatibility
+var appVersion = getAppVersion()
 
 func isCLICommand(arg string) bool {
 	supportedCommands := []string{

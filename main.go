@@ -5,6 +5,7 @@ package main
 import (
 	"embed"
 	_ "embed"
+	"fmt"
 	"log"
 	"os"
 
@@ -49,7 +50,7 @@ func runGUI() {
 
 	// Create the main window
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title:  "qBittorrent File Matcher",
+		Title:  fmt.Sprintf("qBittorrent File Matcher v%s", appVersion),
 		Width:  1200,
 		Height: 800,
 		Mac: application.MacWindow{
