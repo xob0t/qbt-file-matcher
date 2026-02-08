@@ -55,27 +55,6 @@ func TestFormatSize(t *testing.T) {
 	}
 }
 
-func TestNormalizePath(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected string
-	}{
-		{"C:\\Users\\admin\\Downloads", "C:/Users/admin/Downloads"},
-		{"C:/Users/admin/Downloads", "C:/Users/admin/Downloads"},
-		{"/home/user/downloads", "/home/user/downloads"},
-		{"", ""},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.input, func(t *testing.T) {
-			result := normalizePath(tt.input)
-			if result != tt.expected {
-				t.Errorf("normalizePath(%q) = %q, want %q", tt.input, result, tt.expected)
-			}
-		})
-	}
-}
-
 func TestMatchConfig_Defaults(t *testing.T) {
 	config := matchConfig{
 		sameExtension: true,

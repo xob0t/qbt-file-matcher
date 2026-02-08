@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { QBitService } from '../../bindings/qbittorrent-file-matcher/backend'
+import { getErrorMessage, isValidUrl } from '@/lib/utils'
 import type { ConnectionInfo } from '../App'
 
 interface ConnectionPanelProps {
@@ -23,6 +24,11 @@ export function ConnectionPanel({ onConnect }: ConnectionPanelProps) {
       return
     }
 
+    if (!isValidUrl(url)) {
+      toast.error('Please enter a valid URL (e.g., http://localhost:8080)')
+      return
+    }
+
     setIsConnecting(true)
     try {
       await QBitService.Connect({ url, username, password })
@@ -30,7 +36,7 @@ export function ConnectionPanel({ onConnect }: ConnectionPanelProps) {
       toast.success(`Connected to qBittorrent ${version}`)
       onConnect({ url, username, version })
     } catch (error) {
-      toast.error(`Connection failed: ${error}`)
+      toast.error(`Connection failed: ${getErrorMessage(error)}`)
     } finally {
       setIsConnecting(false)
     }

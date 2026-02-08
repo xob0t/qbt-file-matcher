@@ -30,39 +30,13 @@ import {
 import { toast } from 'sonner'
 import { Dialogs } from '@wailsio/runtime'
 import { QBitService, MatcherService } from '../../bindings/qbittorrent-file-matcher/backend'
+import type { TorrentFile, DiskFile, MatchInfo } from '../../bindings/qbittorrent-file-matcher/backend/models'
+import { formatSize, getErrorMessage } from '@/lib/utils'
 import type { TorrentInfo } from '../App'
 
 interface MatchingPanelProps {
   torrent: TorrentInfo
   onBack: () => void
-}
-
-interface TorrentFile {
-  index: number
-  name: string
-  size: number
-  progress: number
-}
-
-interface DiskFile {
-  path: string
-  name: string
-  size: number
-}
-
-interface MatchInfo {
-  torrentFile: { index: number; name: string; size: number }
-  diskFiles: DiskFile[]
-  selected: DiskFile | null
-  autoMatched: boolean
-}
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
 }
 
 export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
@@ -86,7 +60,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
       const files = await QBitService.GetTorrentFiles(torrent.hash)
       setTorrentFiles(files)
     } catch (error) {
-      toast.error(`Failed to load files: ${error}`)
+      toast.error(`Failed to load files: ${getErrorMessage(error)}`)
     } finally {
       setIsLoading(false)
     }
@@ -135,7 +109,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
         toast.warning('No automatic matches found')
       }
     } catch (error) {
-      toast.error(`Scan failed: ${error}`)
+      toast.error(`Scan failed: ${getErrorMessage(error)}`)
     } finally {
       setIsScanning(false)
     }
@@ -214,7 +188,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
       setMatches([])
       setUnmatched([])
     } catch (error) {
-      toast.error(`Apply failed: ${error}`)
+      toast.error(`Apply failed: ${getErrorMessage(error)}`)
     } finally {
       setIsApplying(false)
     }
@@ -239,7 +213,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
       await loadTorrentFiles()
       setUnmatched([])
     } catch (error) {
-      toast.error(`Failed to skip files: ${error}`)
+      toast.error(`Failed to skip files: ${getErrorMessage(error)}`)
     } finally {
       setIsSkipping(false)
     }
@@ -252,7 +226,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
       toast.success('Recheck started - qBittorrent will verify file integrity')
       setShowRecheckButton(false)
     } catch (error) {
-      toast.error(`Failed to start recheck: ${error}`)
+      toast.error(`Failed to start recheck: ${getErrorMessage(error)}`)
     } finally {
       setIsRechecking(false)
     }

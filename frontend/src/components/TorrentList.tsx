@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -16,18 +16,11 @@ import {
 } from '@/components/ui/item'
 import { toast } from 'sonner'
 import { QBitService } from '../../bindings/qbittorrent-file-matcher/backend'
+import { formatSize, getErrorMessage } from '@/lib/utils'
 import type { TorrentInfo } from '../App'
 
 interface TorrentListProps {
   onSelectTorrent: (torrent: TorrentInfo) => void
-}
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
 }
 
 function getStateBadge(state: string): { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' } {
@@ -56,9 +49,22 @@ export function TorrentList({ onSelectTorrent }: TorrentListProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
+  const loadTorrents = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const result = await QBitService.GetTorrents()
+      setTorrents(result)
+      setFilteredTorrents(result)
+    } catch (error) {
+      toast.error(`Failed to load torrents: ${getErrorMessage(error)}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadTorrents()
-  }, [])
+  }, [loadTorrents])
 
   useEffect(() => {
     if (searchQuery) {
@@ -70,19 +76,6 @@ export function TorrentList({ onSelectTorrent }: TorrentListProps) {
       setFilteredTorrents(torrents)
     }
   }, [searchQuery, torrents])
-
-  const loadTorrents = async () => {
-    setIsLoading(true)
-    try {
-      const result = await QBitService.GetTorrents()
-      setTorrents(result)
-      setFilteredTorrents(result)
-    } catch (error) {
-      toast.error(`Failed to load torrents: ${error}`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   return (
     <Card className="flex-1 flex flex-col min-h-0">

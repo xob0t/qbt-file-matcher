@@ -108,6 +108,11 @@ func (s *QBitService) GetTorrentFiles(hash string) ([]TorrentFile, error) {
 		return nil, err
 	}
 
+	// Handle nil response
+	if files == nil {
+		return []TorrentFile{}, nil
+	}
+
 	result := make([]TorrentFile, len(*files))
 	for i, f := range *files {
 		result[i] = TorrentFile{

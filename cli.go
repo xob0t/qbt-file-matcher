@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -30,7 +29,18 @@ func runMatchCommand() {
 		sameExtension: true, // default
 	}
 
-	// Parse flags
+	// Load from environment variables first (command line args override)
+	if envPassword := os.Getenv("QBT_PASSWORD"); envPassword != "" {
+		config.password = envPassword
+	}
+	if envUsername := os.Getenv("QBT_USERNAME"); envUsername != "" {
+		config.username = envUsername
+	}
+	if envURL := os.Getenv("QBT_URL"); envURL != "" {
+		config.url = envURL
+	}
+
+	// Parse flags (override environment variables)
 	args := os.Args[2:]
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
@@ -303,9 +313,4 @@ func formatSize(bytes int64) string {
 		i++
 	}
 	return fmt.Sprintf("%.1f %s", size, sizes[i])
-}
-
-// Ensure path uses forward slashes (for consistency)
-func normalizePath(path string) string {
-	return filepath.ToSlash(path)
 }

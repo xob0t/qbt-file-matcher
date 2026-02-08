@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -15,10 +16,13 @@ type DiskFile struct {
 // ScanDirectory scans a directory recursively and returns all files with their sizes
 func ScanDirectory(root string) ([]DiskFile, error) {
 	var files []DiskFile
+	var skippedCount int
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			// Skip files/directories we can't access
+			// Log and skip files/directories we can't access
+			skippedCount++
+			log.Printf("Skipping inaccessible path: %s (%v)", path, err)
 			return nil
 		}
 
@@ -35,6 +39,10 @@ func ScanDirectory(root string) ([]DiskFile, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	if skippedCount > 0 {
+		log.Printf("Skipped %d inaccessible files/directories during scan", skippedCount)
 	}
 
 	return files, nil
