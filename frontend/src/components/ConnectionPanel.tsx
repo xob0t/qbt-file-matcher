@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { QBitService } from '../../bindings/qbittorrent-file-matcher'
+import type { ConnectionInfo } from '../App'
 
 interface ConnectionPanelProps {
-  onConnect: () => void
+  onConnect: (info: ConnectionInfo) => void
 }
 
 export function ConnectionPanel({ onConnect }: ConnectionPanelProps) {
@@ -27,7 +28,7 @@ export function ConnectionPanel({ onConnect }: ConnectionPanelProps) {
       await QBitService.Connect({ url, username, password })
       const version = await QBitService.GetVersion()
       toast.success(`Connected to qBittorrent ${version}`)
-      onConnect()
+      onConnect({ url, username, version })
     } catch (error) {
       toast.error(`Connection failed: ${error}`)
     } finally {

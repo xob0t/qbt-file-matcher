@@ -20,7 +20,6 @@ import type { TorrentInfo } from '../App'
 
 interface TorrentListProps {
   onSelectTorrent: (torrent: TorrentInfo) => void
-  onDisconnect: () => void
 }
 
 function formatSize(bytes: number): string {
@@ -51,7 +50,7 @@ function getStateBadge(state: string): { label: string; variant: 'default' | 'se
   return states[state] || { label: state, variant: 'secondary' }
 }
 
-export function TorrentList({ onSelectTorrent, onDisconnect }: TorrentListProps) {
+export function TorrentList({ onSelectTorrent }: TorrentListProps) {
   const [torrents, setTorrents] = useState<TorrentInfo[]>([])
   const [filteredTorrents, setFilteredTorrents] = useState<TorrentInfo[]>([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -85,15 +84,6 @@ export function TorrentList({ onSelectTorrent, onDisconnect }: TorrentListProps)
     }
   }
 
-  const handleDisconnect = async () => {
-    try {
-      await QBitService.Disconnect()
-      onDisconnect()
-    } catch (error) {
-      toast.error(`Disconnect failed: ${error}`)
-    }
-  }
-
   return (
     <Card className="flex-1 flex flex-col min-h-0">
       <CardHeader className="shrink-0">
@@ -104,14 +94,9 @@ export function TorrentList({ onSelectTorrent, onDisconnect }: TorrentListProps)
               {filteredTorrents.length} of {torrents.length} torrents
             </CardDescription>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={loadTorrents} disabled={isLoading}>
-              Refresh
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleDisconnect}>
-              Disconnect
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" onClick={loadTorrents} disabled={isLoading}>
+            Refresh
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col min-h-0 gap-4">
