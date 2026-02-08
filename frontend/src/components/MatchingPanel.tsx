@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -80,11 +80,7 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
   const [selectDialogOpen, setSelectDialogOpen] = useState(false)
   const [currentMatchIndex, setCurrentMatchIndex] = useState<number | null>(null)
 
-  useEffect(() => {
-    loadTorrentFiles()
-  }, [torrent.hash])
-
-  const loadTorrentFiles = async () => {
+  const loadTorrentFiles = useCallback(async () => {
     setIsLoading(true)
     try {
       const files = await QBitService.GetTorrentFiles(torrent.hash)
@@ -94,7 +90,11 @@ export function MatchingPanel({ torrent, onBack }: MatchingPanelProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [torrent.hash])
+
+  useEffect(() => {
+    loadTorrentFiles()
+  }, [loadTorrentFiles])
 
   const handleScan = async () => {
     if (!searchPath) {
