@@ -1,0 +1,9 @@
+{
+  "go.testEnvFile": "${workspaceFolder}/.env",
+  "go.testFlags": ["-v"],
+  "go.buildFlags": [],
+  "go.lintOnSave": "workspace",
+  "gopls": {
+    "build.buildFlags": []
+  }
+}

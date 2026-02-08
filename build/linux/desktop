@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=My Product
+Comment=A qbittorrent-file-matcher application
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/qbittorrent-file-matcher.exe %u
+Terminal=false
+Type=Application
+Icon=qbittorrent-file-matcher.exe
+Categories=Utility;
+StartupWMClass=qbittorrent-file-matcher.exe
+
+ 
