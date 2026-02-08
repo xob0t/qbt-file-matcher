@@ -36,28 +36,25 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-6 px-4">
-        <header className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">qBittorrent File Matcher</h1>
-          <p className="text-muted-foreground">Match torrent files with existing files on your disk</p>
-        </header>
-
-        {!isConnected ? (
-          <ConnectionPanel onConnect={handleConnect} />
-        ) : !selectedTorrent ? (
-          <TorrentList 
-            onSelectTorrent={handleSelectTorrent} 
-            onDisconnect={handleDisconnect}
-          />
-        ) : (
-          <MatchingPanel 
-            torrent={selectedTorrent} 
-            onBack={handleBack}
-          />
-        )}
-      </div>
-      <Toaster />
+    <div className="h-screen flex flex-col bg-background">
+      {!isConnected ? (
+        <ConnectionPanel onConnect={handleConnect} />
+      ) : (
+        <div className="flex-1 flex flex-col min-h-0 p-4">
+          {!selectedTorrent ? (
+            <TorrentList 
+              onSelectTorrent={handleSelectTorrent} 
+              onDisconnect={handleDisconnect}
+            />
+          ) : (
+            <MatchingPanel 
+              torrent={selectedTorrent} 
+              onBack={handleBack}
+            />
+          )}
+        </div>
+      )}
+      <Toaster position="bottom-right" />
     </div>
   )
 }

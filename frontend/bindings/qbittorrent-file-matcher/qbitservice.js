@@ -70,6 +70,15 @@ export function IsConnected() {
 }
 
 /**
+ * RecheckTorrent triggers a hash recheck for the torrent
+ * @param {string} hash
+ * @returns {$CancellablePromise<void>}
+ */
+export function RecheckTorrent(hash) {
+    return $Call.ByID(474061148, hash);
+}
+
+/**
  * RenameFile renames a file in qBittorrent
  * @param {string} hash
  * @param {string} oldPath
@@ -78,6 +87,19 @@ export function IsConnected() {
  */
 export function RenameFile(hash, oldPath, newPath) {
     return $Call.ByID(3420300407, hash, oldPath, newPath);
+}
+
+/**
+ * SetFilePriority sets the priority for files in a torrent
+ * IDs is a comma-separated list of file indices (e.g., "0,1,2")
+ * Priority: 0 = do not download, 1 = normal, 6 = high, 7 = maximum
+ * @param {string} hash
+ * @param {string} fileIDs
+ * @param {number} priority
+ * @returns {$CancellablePromise<void>}
+ */
+export function SetFilePriority(hash, fileIDs, priority) {
+    return $Call.ByID(3045938327, hash, fileIDs, priority);
 }
 
 /**

@@ -155,6 +155,20 @@ tasks:
     cmds:
       - '{{.BIN_DIR}}/{{.APP_NAME}}.exe'
 
+  build:cli:
+    summary: Builds the CLI-only application for Windows (no Wails/WebView dependencies)
+    dir: '{{.ROOT_DIR}}'
+    deps:
+      - task: common:go:mod:tidy
+    cmds:
+      - go build {{.BUILD_FLAGS}} -tags cli -o {{.BIN_DIR}}/{{.APP_NAME}}-cli.exe
+    vars:
+      BUILD_FLAGS: '-trimpath -buildvcs=false -ldflags="-w -s"'
+    env:
+      GOOS: windows
+      CGO_ENABLED: 0
+      GOARCH: '{{.ARCH | default ARCH}}'
+
   sign:
     summary: Signs the Windows executable
     desc: |

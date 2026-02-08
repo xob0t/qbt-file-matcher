@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
 import { QBitService } from '../../bindings/qbittorrent-file-matcher'
 
 interface ConnectionPanelProps {
@@ -18,7 +18,7 @@ export function ConnectionPanel({ onConnect }: ConnectionPanelProps) {
 
   const handleConnect = async () => {
     if (!url || !username) {
-      toast.error('Please fill in all required fields')
+      toast.error('Please fill in URL and username')
       return
     }
 
@@ -36,55 +36,62 @@ export function ConnectionPanel({ onConnect }: ConnectionPanelProps) {
   }
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Connect to qBittorrent</CardTitle>
-        <CardDescription>
-          Enter your qBittorrent Web UI credentials. Make sure Web UI is enabled in qBittorrent settings.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Web UI URL</label>
-          <Input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="http://localhost:8080"
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Username</label>
-          <Input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="admin"
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Password</label>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
-            onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
-          />
-        </div>
-        <Button 
-          onClick={handleConnect} 
-          className="w-full"
-          disabled={isConnecting}
-        >
-          {isConnecting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Connecting...
-            </>
-          ) : (
-            'Connect'
-          )}
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="text-center">
+          <CardTitle>Connect to qBittorrent</CardTitle>
+          <CardDescription>
+            Enter your WebUI credentials to get started
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Server URL</label>
+            <Input
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="http://localhost:8080"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Username</label>
+            <Input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="admin"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Password</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
+            />
+          </div>
+
+          <Button 
+            onClick={handleConnect} 
+            className="w-full"
+            disabled={isConnecting}
+          >
+            {isConnecting ? (
+              <>
+                <Spinner className="mr-2" />
+                Connecting...
+              </>
+            ) : 'Connect'}
+          </Button>
+
+          <p className="text-center text-xs text-muted-foreground">
+            Enable WebUI in qBittorrent under Tools → Options → Web UI
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

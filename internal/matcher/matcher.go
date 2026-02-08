@@ -1,7 +1,6 @@
 package matcher
 
 import (
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -96,29 +95,33 @@ func FindMatches(torrentFiles []TorrentFileInfo, diskFiles []DiskFile, requireSa
 
 // GenerateRenames generates the rename operations needed to match files
 // Note: qBittorrent API uses forward slashes for paths on all platforms
-func GenerateRenames(matches []Match, torrentContentPath string) []RenameOperation {
+// searchPath is the directory that was scanned for disk files - the new path
+// will be the disk file's path relative to this search path
+func GenerateRenames(matches []Match, searchPath string) []RenameOperation {
 	var renames []RenameOperation
+
+	// Clean the search path for consistent relative path calculation
+	searchPath = filepath.Clean(searchPath)
 
 	for _, m := range matches {
 		if m.Selected == nil {
 			continue
 		}
 
-		// The new path should be relative to the torrent content path
-		// and match the selected disk file's name
 		oldPath := m.TorrentFile.Name
 
-		// Keep the directory structure from the torrent, just change the filename
-		// Use path (not filepath) to ensure forward slashes for qBittorrent API
-		dir := path.Dir(oldPath)
-		newName := filepath.Base(m.Selected.Path)
-
-		var newPath string
-		if dir == "." {
-			newPath = newName
-		} else {
-			newPath = path.Join(dir, newName)
+		// The new path should be the disk file's path relative to the search path
+		// This matches the Python implementation:
+		//   new_relative_path = Path(selected_file_path).relative_to(download_path)
+		diskFilePath := filepath.Clean(m.Selected.Path)
+		relPath, err := filepath.Rel(searchPath, diskFilePath)
+		if err != nil {
+			// If we can't compute relative path, skip this file
+			continue
 		}
+
+		// Convert to forward slashes for qBittorrent API (works on all platforms)
+		newPath := filepath.ToSlash(relPath)
 
 		// Only add rename if paths are different
 		if oldPath != newPath {

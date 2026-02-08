@@ -353,12 +353,12 @@ export class RenameRequest {
              */
             this["matches"] = [];
         }
-        if (!("torrentContentPath" in $$source)) {
+        if (!("searchPath" in $$source)) {
             /**
              * @member
              * @type {string}
              */
-            this["torrentContentPath"] = "";
+            this["searchPath"] = "";
         }
 
         Object.assign(this, $$source);

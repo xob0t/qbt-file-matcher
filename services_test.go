@@ -2,7 +2,9 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/joho/godotenv"
 	"qbittorrent-file-matcher/internal/matcher"
@@ -189,5 +191,238 @@ func TestMatcherService_FindMatches(t *testing.T) {
 	}
 	if len(result.Unmatched) != 1 {
 		t.Errorf("Expected 1 unmatched, got %d", len(result.Unmatched))
+	}
+}
+
+// TestSpecificTorrent_Debug tests the specific torrent to debug the rename issue
+func TestSpecificTorrent_Debug(t *testing.T) {
+	config := getQBTConfig(t)
+
+	service := &QBitService{}
+	err := service.Connect(config)
+	if err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+
+	// Get the specific torrent
+	hash := "cd510ce6662fb4fdcfa2b200118c379fff4c8622"
+	files, err := service.GetTorrentFiles(hash)
+	if err != nil {
+		t.Fatalf("Failed to get torrent files: %v", err)
+	}
+
+	// Get torrent info
+	torrents, err := service.GetTorrents()
+	if err != nil {
+		t.Fatalf("Failed to get torrents: %v", err)
+	}
+
+	var torrent *TorrentInfo
+	for i := range torrents {
+		if torrents[i].Hash == hash {
+			torrent = &torrents[i]
+			break
+		}
+	}
+
+	if torrent == nil {
+		t.Fatalf("Torrent %s not found", hash)
+	}
+
+	t.Logf("Torrent: %s", torrent.Name)
+	t.Logf("SavePath: %s", torrent.SavePath)
+	t.Logf("ContentPath: %s", torrent.ContentPath)
+	t.Logf("")
+	t.Logf("Files in torrent:")
+	for _, f := range files {
+		t.Logf("  [%d] %s (%d bytes)", f.Index, f.Name, f.Size)
+	}
+}
+
+// TestSpecificTorrent_SimulateMatch simulates the matching and rename process
+func TestSpecificTorrent_SimulateMatch(t *testing.T) {
+	matcherService := &MatcherService{}
+
+	// Simulate the scenario:
+	// - Torrent file: "Le Bureau des Légendes S03E01.mkv" (no directory)
+	// - Disk file: in subdirectory "Le Bureau des Légendes (The Bureau) - season 33"
+	// - Search path: "C:\Users\admin\Downloads"
+
+	searchPath := `C:\Users\admin\Downloads`
+
+	// Scan the directory
+	diskFiles, err := matcherService.ScanDirectory(searchPath)
+	if err != nil {
+		t.Fatalf("Failed to scan: %v", err)
+	}
+
+	// Find the S03E01 file
+	var targetDiskFile *DiskFileInfo
+	for i := range diskFiles {
+		if diskFiles[i].Name == "Le Bureau des Légendes S03E01.mkv" {
+			targetDiskFile = &diskFiles[i]
+			break
+		}
+	}
+
+	if targetDiskFile == nil {
+		t.Skip("Target disk file not found")
+	}
+
+	t.Logf("Found disk file: %s", targetDiskFile.Path)
+
+	// Create the match
+	torrentFiles := []matcher.TorrentFileInfo{
+		{Index: 0, Name: "Le Bureau des Légendes S03E01.mkv", Size: targetDiskFile.Size},
+	}
+	matchDiskFiles := []matcher.DiskFile{
+		{Path: targetDiskFile.Path, Name: targetDiskFile.Name, Size: targetDiskFile.Size},
+	}
+
+	// Find matches
+	matchResult := matcherService.FindMatches(MatchRequest{
+		TorrentFiles:         torrentFiles,
+		DiskFiles:            matchDiskFiles,
+		RequireSameExtension: true,
+	})
+
+	t.Logf("Match result: %d matches, %d unmatched", matchResult.MatchedCount, len(matchResult.Unmatched))
+
+	if len(matchResult.Matches) == 0 {
+		t.Fatal("No matches found")
+	}
+
+	// Generate renames
+	renames := matcherService.GenerateRenames(RenameRequest{
+		Matches:    matchResult.Matches,
+		SearchPath: searchPath,
+	})
+
+	t.Logf("")
+	t.Logf("Generated renames:")
+	for _, r := range renames {
+		t.Logf("  Old: %s", r.OldPath)
+		t.Logf("  New: %s", r.NewPath)
+		t.Logf("")
+	}
+
+	// Verify the rename is correct
+	if len(renames) == 0 {
+		t.Error("Expected at least one rename operation")
+	} else {
+		// The new path should include the subdirectory
+		expectedNewPath := "Le Bureau des Légendes (The Bureau) - season 33/Le Bureau des Légendes S03E01.mkv"
+		if renames[0].NewPath != expectedNewPath {
+			t.Errorf("Expected new path '%s', got '%s'", expectedNewPath, renames[0].NewPath)
+		}
+	}
+}
+
+// TestSpecificTorrent_ActualRename actually performs the rename to test it
+func TestSpecificTorrent_ActualRename(t *testing.T) {
+	config := getQBTConfig(t)
+
+	qbitService := &QBitService{}
+	err := qbitService.Connect(config)
+	if err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+
+	matcherService := &MatcherService{}
+
+	hash := "cd510ce6662fb4fdcfa2b200118c379fff4c8622"
+	searchPath := `C:\Users\admin\Downloads`
+
+	// Get current torrent files
+	torrentFiles, err := qbitService.GetTorrentFiles(hash)
+	if err != nil {
+		t.Fatalf("Failed to get torrent files: %v", err)
+	}
+
+	t.Logf("Current torrent files:")
+	for _, f := range torrentFiles {
+		t.Logf("  [%d] %s", f.Index, f.Name)
+	}
+
+	// Scan disk
+	diskFiles, err := matcherService.ScanDirectory(searchPath)
+	if err != nil {
+		t.Fatalf("Failed to scan: %v", err)
+	}
+
+	// Find a specific file to test with
+	var targetTorrentFile *TorrentFileInfo
+	var targetDiskFile *DiskFileInfo
+
+	for i := range torrentFiles {
+		if torrentFiles[i].Name == "Le Bureau des Légendes S03E01.mkv" {
+			targetTorrentFile = &torrentFiles[i]
+			break
+		}
+	}
+
+	for i := range diskFiles {
+		if diskFiles[i].Name == "Le Bureau des Légendes S03E01.mkv" {
+			targetDiskFile = &diskFiles[i]
+			break
+		}
+	}
+
+	if targetTorrentFile == nil || targetDiskFile == nil {
+		t.Skip("Target files not found")
+	}
+
+	t.Logf("")
+	t.Logf("Torrent file: %s", targetTorrentFile.Name)
+	t.Logf("Disk file: %s", targetDiskFile.Path)
+
+	// Compute the new path
+	relPath, err := filepath.Rel(searchPath, targetDiskFile.Path)
+	if err != nil {
+		t.Fatalf("Failed to compute relative path: %v", err)
+	}
+	newPath := filepath.ToSlash(relPath)
+
+	t.Logf("")
+	t.Logf("Rename operation:")
+	t.Logf("  Old: %s", targetTorrentFile.Name)
+	t.Logf("  New: %s", newPath)
+
+	// Actually perform the rename
+	t.Logf("")
+	t.Logf("Attempting rename...")
+
+	err = qbitService.RenameFile(hash, targetTorrentFile.Name, newPath)
+	if err != nil {
+		t.Fatalf("Failed to rename: %v", err)
+	}
+	t.Logf("Rename returned success!")
+
+	// Wait a bit for qBittorrent to process
+	time.Sleep(500 * time.Millisecond)
+
+	// Verify by getting the files again
+	torrentFilesAfter, err := qbitService.GetTorrentFiles(hash)
+	if err != nil {
+		t.Fatalf("Failed to get torrent files after rename: %v", err)
+	}
+
+	t.Logf("")
+	t.Logf("Torrent files after rename:")
+	for _, f := range torrentFilesAfter {
+		t.Logf("  [%d] %s", f.Index, f.Name)
+	}
+
+	// Check if the rename actually happened
+	foundNewPath := false
+	for _, f := range torrentFilesAfter {
+		if f.Name == newPath {
+			foundNewPath = true
+			break
+		}
+	}
+
+	if !foundNewPath {
+		t.Errorf("Rename did not take effect! Expected to find file with path '%s'", newPath)
 	}
 }

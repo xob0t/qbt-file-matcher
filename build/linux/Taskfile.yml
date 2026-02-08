@@ -184,6 +184,21 @@ tasks:
     cmds:
       - '{{.BIN_DIR}}/{{.APP_NAME}}'
 
+  build:cli:
+    summary: Builds the CLI-only application for Linux (no Wails/WebKit dependencies)
+    dir: '{{.ROOT_DIR}}'
+    deps:
+      - task: common:go:mod:tidy
+    cmds:
+      - go build {{.BUILD_FLAGS}} -tags cli -o {{.BIN_DIR}}/{{.APP_NAME}}-cli
+    vars:
+      BUILD_FLAGS: '{{if eq .PRODUCTION "true"}}-trimpath -buildvcs=false -ldflags="-w -s"{{else}}-buildvcs=false -gcflags=all="-l"{{end}}'
+    env:
+      GOOS: linux
+      CGO_ENABLED: 0
+      GOARCH: '{{.ARCH | default ARCH}}'
+      PRODUCTION: '{{.PRODUCTION | default "false"}}'
+
   sign:deb:
     summary: Signs the DEB package
     desc: |

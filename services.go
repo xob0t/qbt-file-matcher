@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -142,6 +141,24 @@ func (s *QBitService) SetTorrentLocation(hash string, location string) error {
 	return s.client.SetLocation([]string{hash}, location)
 }
 
+// SetFilePriority sets the priority for files in a torrent
+// IDs is a comma-separated list of file indices (e.g., "0,1,2")
+// Priority: 0 = do not download, 1 = normal, 6 = high, 7 = maximum
+func (s *QBitService) SetFilePriority(hash string, fileIDs string, priority int) error {
+	if s.client == nil {
+		return fmt.Errorf("not connected")
+	}
+	return s.client.SetFilePriority(hash, fileIDs, priority)
+}
+
+// RecheckTorrent triggers a hash recheck for the torrent
+func (s *QBitService) RecheckTorrent(hash string) error {
+	if s.client == nil {
+		return fmt.Errorf("not connected")
+	}
+	return s.client.Recheck([]string{hash})
+}
+
 // MatcherService handles file matching operations
 type MatcherService struct{}
 
@@ -227,8 +244,8 @@ func (s *MatcherService) FindMatches(req MatchRequest) MatchResponse {
 
 // RenameRequest represents a rename operation request
 type RenameRequest struct {
-	Matches            []MatchInfo `json:"matches"`
-	TorrentContentPath string      `json:"torrentContentPath"`
+	Matches    []MatchInfo `json:"matches"`
+	SearchPath string      `json:"searchPath"`
 }
 
 // RenameOperation represents a single rename operation
@@ -252,7 +269,7 @@ func (s *MatcherService) GenerateRenames(req RenameRequest) []RenameOperation {
 		}
 	}
 
-	renames := matcher.GenerateRenames(matches, req.TorrentContentPath)
+	renames := matcher.GenerateRenames(matches, req.SearchPath)
 
 	result := make([]RenameOperation, len(renames))
 	for i, r := range renames {
@@ -274,14 +291,4 @@ func (s *MatcherService) DirectoryExists(path string) bool {
 		return false
 	}
 	return info.IsDir()
-}
-
-// DialogService handles native dialogs
-type DialogService struct {
-	ctx context.Context
-}
-
-// SetContext sets the application context for dialogs
-func (s *DialogService) SetContext(ctx context.Context) {
-	s.ctx = ctx
 }

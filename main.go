@@ -1,9 +1,12 @@
+//go:build !cli
+
 package main
 
 import (
 	"embed"
 	_ "embed"
 	"log"
+	"os"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -12,6 +15,18 @@ import (
 var assets embed.FS
 
 func main() {
+	// Check if running in CLI mode based on recognized commands
+	// If unrecognized arguments are passed, default to GUI mode
+	if len(os.Args) > 1 && isCLICommand(os.Args[1]) {
+		runCLI()
+		return
+	}
+
+	// Run GUI mode (default when no arguments or unrecognized arguments)
+	runGUI()
+}
+
+func runGUI() {
 	// Create service instances
 	qbitService := &QBitService{}
 	matcherService := &MatcherService{}

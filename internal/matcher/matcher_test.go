@@ -120,6 +120,8 @@ func TestFindMatches_ExactNameMatch(t *testing.T) {
 }
 
 func TestGenerateRenames(t *testing.T) {
+	// searchPath is the directory that was scanned for disk files
+	// The disk file path must be under searchPath for relative path calculation
 	matches := []Match{
 		{
 			TorrentFile: TorrentFileInfo{Index: 0, Name: "old_name.mkv", Size: 1000000},
@@ -127,7 +129,7 @@ func TestGenerateRenames(t *testing.T) {
 		},
 	}
 
-	renames := GenerateRenames(matches, "/downloads")
+	renames := GenerateRenames(matches, "/data")
 
 	if len(renames) != 1 {
 		t.Errorf("Expected 1 rename, got %d", len(renames))
@@ -135,6 +137,7 @@ func TestGenerateRenames(t *testing.T) {
 	if renames[0].OldPath != "old_name.mkv" {
 		t.Errorf("Expected old path 'old_name.mkv', got '%s'", renames[0].OldPath)
 	}
+	// New path is the disk file's path relative to searchPath
 	if renames[0].NewPath != "new_name.mkv" {
 		t.Errorf("Expected new path 'new_name.mkv', got '%s'", renames[0].NewPath)
 	}
@@ -148,7 +151,7 @@ func TestGenerateRenames_NoChange(t *testing.T) {
 		},
 	}
 
-	renames := GenerateRenames(matches, "/downloads")
+	renames := GenerateRenames(matches, "/data")
 
 	if len(renames) != 0 {
 		t.Errorf("Expected 0 renames (same name), got %d", len(renames))
@@ -156,10 +159,35 @@ func TestGenerateRenames_NoChange(t *testing.T) {
 }
 
 func TestGenerateRenames_WithSubdirectory(t *testing.T) {
+	// Test case: disk file is in a subdirectory of searchPath
+	// The new path should be the disk file's relative path from searchPath
 	matches := []Match{
 		{
 			TorrentFile: TorrentFileInfo{Index: 0, Name: "Season 1/episode01.mkv", Size: 1000000},
-			Selected:    &DiskFile{Path: "/data/S01E01.mkv", Name: "S01E01.mkv", Size: 1000000},
+			Selected:    &DiskFile{Path: "/data/My Show/S01E01.mkv", Name: "S01E01.mkv", Size: 1000000},
+		},
+	}
+
+	renames := GenerateRenames(matches, "/data")
+
+	if len(renames) != 1 {
+		t.Errorf("Expected 1 rename, got %d", len(renames))
+	}
+	if renames[0].OldPath != "Season 1/episode01.mkv" {
+		t.Errorf("Expected old path 'Season 1/episode01.mkv', got '%s'", renames[0].OldPath)
+	}
+	// New path is the disk file's path relative to searchPath (with forward slashes)
+	if renames[0].NewPath != "My Show/S01E01.mkv" {
+		t.Errorf("Expected new path 'My Show/S01E01.mkv', got '%s'", renames[0].NewPath)
+	}
+}
+
+func TestGenerateRenames_DiskFileInSubdir(t *testing.T) {
+	// Test that when disk file is in a subdirectory, the relative path is correct
+	matches := []Match{
+		{
+			TorrentFile: TorrentFileInfo{Index: 0, Name: "video.mkv", Size: 1000000},
+			Selected:    &DiskFile{Path: "/downloads/Movies/My Movie/video.mkv", Name: "video.mkv", Size: 1000000},
 		},
 	}
 
@@ -168,12 +196,9 @@ func TestGenerateRenames_WithSubdirectory(t *testing.T) {
 	if len(renames) != 1 {
 		t.Errorf("Expected 1 rename, got %d", len(renames))
 	}
-	if renames[0].OldPath != "Season 1/episode01.mkv" {
-		t.Errorf("Expected old path 'Season 1/episode01.mkv', got '%s'", renames[0].OldPath)
-	}
-	// New path should keep directory structure
-	if renames[0].NewPath != "Season 1/S01E01.mkv" {
-		t.Errorf("Expected new path 'Season 1/S01E01.mkv', got '%s'", renames[0].NewPath)
+	// New path should be the full relative path from searchPath
+	if renames[0].NewPath != "Movies/My Movie/video.mkv" {
+		t.Errorf("Expected new path 'Movies/My Movie/video.mkv', got '%s'", renames[0].NewPath)
 	}
 }
 
