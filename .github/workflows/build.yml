@@ -25,7 +25,7 @@ on:
       build_debug:
         description: "Also build debug version"
         required: false
-        default: true
+        default: false
         type: boolean
   push:
     tags:
@@ -94,7 +94,7 @@ jobs:
           cd ..
 
       - name: Build macOS App (Debug)
-        if: (github.event_name == 'workflow_dispatch' && inputs.build_debug) || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+        if: github.event_name == 'workflow_dispatch' && inputs.build_debug
         run: |
           rm -rf bin/qbt-file-matcher.app
           rm -f bin/qbt-file-matcher
@@ -190,7 +190,7 @@ jobs:
           Move-Item -Path "bin\qbt-file-matcher-cli.exe" -Destination "release\qbt-file-matcher-cli-x64.exe"
 
       - name: Build Windows App (Debug)
-        if: (github.event_name == 'workflow_dispatch' && inputs.build_debug) || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+        if: github.event_name == 'workflow_dispatch' && inputs.build_debug
         shell: pwsh
         run: |
           Remove-Item -Path "bin\qbt-file-matcher.exe" -ErrorAction SilentlyContinue
@@ -291,7 +291,7 @@ jobs:
           wails3 task linux:build:cli PRODUCTION=true || go build -tags cli -trimpath -buildvcs=false -ldflags="-w -s" -o release/qbt-file-matcher-cli-linux-amd64
 
       - name: Build Linux App (Debug)
-        if: (github.event_name == 'workflow_dispatch' && inputs.build_debug) || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+        if: github.event_name == 'workflow_dispatch' && inputs.build_debug
         run: |
           rm -f bin/qbt-file-matcher
 
