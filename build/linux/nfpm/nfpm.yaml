@@ -3,7 +3,7 @@
 #
 # The lines below are called `modelines`. See `:help modeline`
 
-name: "qbt-file-matcher.exe"
+name: "qbt-file-matcher"
 arch: ${GOARCH}
 platform: "linux"
 version: "0.1.0"
@@ -17,12 +17,12 @@ license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/qbt-file-matcher.exe"
-    dst: "/usr/local/bin/qbt-file-matcher.exe"
+  - src: "./bin/qbt-file-matcher"
+    dst: "/usr/local/bin/qbt-file-matcher"
   - src: "./build/appicon.png"
-    dst: "/usr/share/icons/hicolor/128x128/apps/qbt-file-matcher.exe.png"
-  - src: "./build/linux/qbt-file-matcher.exe.desktop"
-    dst: "/usr/share/applications/qbt-file-matcher.exe.desktop"
+    dst: "/usr/share/icons/hicolor/128x128/apps/qbt-file-matcher.png"
+  - src: "./build/linux/qbt-file-matcher.desktop"
+    dst: "/usr/share/applications/qbt-file-matcher.desktop"
 
 # Default dependencies for Debian 12/Ubuntu 22.04+ with WebKit 4.1
 depends:
