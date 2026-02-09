@@ -21,7 +21,7 @@ import * as $models from "./models.js";
  * @returns {$CancellablePromise<void>}
  */
 export function Connect(config) {
-    return $Call.ByID(2643120139, config);
+    return $Call.ByID(836971832, config);
 }
 
 /**
@@ -29,7 +29,7 @@ export function Connect(config) {
  * @returns {$CancellablePromise<void>}
  */
 export function Disconnect() {
-    return $Call.ByID(2108215021);
+    return $Call.ByID(268041660);
 }
 
 /**
@@ -38,7 +38,7 @@ export function Disconnect() {
  * @returns {$CancellablePromise<$models.TorrentFile[]>}
  */
 export function GetTorrentFiles(hash) {
-    return $Call.ByID(1264571836, hash).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(3253337623, hash).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType1($result);
     }));
 }
@@ -48,7 +48,7 @@ export function GetTorrentFiles(hash) {
  * @returns {$CancellablePromise<$models.TorrentInfo[]>}
  */
 export function GetTorrents() {
-    return $Call.ByID(3031147382).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(3359777793).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType3($result);
     }));
 }
@@ -58,7 +58,7 @@ export function GetTorrents() {
  * @returns {$CancellablePromise<string>}
  */
 export function GetVersion() {
-    return $Call.ByID(1877302715);
+    return $Call.ByID(1881025082);
 }
 
 /**
@@ -66,7 +66,7 @@ export function GetVersion() {
  * @returns {$CancellablePromise<boolean>}
  */
 export function IsConnected() {
-    return $Call.ByID(3015515214);
+    return $Call.ByID(901761037);
 }
 
 /**
@@ -75,7 +75,7 @@ export function IsConnected() {
  * @returns {$CancellablePromise<void>}
  */
 export function RecheckTorrent(hash) {
-    return $Call.ByID(3112118224, hash);
+    return $Call.ByID(3052649673, hash);
 }
 
 /**
@@ -86,7 +86,7 @@ export function RecheckTorrent(hash) {
  * @returns {$CancellablePromise<void>}
  */
 export function RenameFile(hash, oldPath, newPath) {
-    return $Call.ByID(471807579, hash, oldPath, newPath);
+    return $Call.ByID(1796283442, hash, oldPath, newPath);
 }
 
 /**
@@ -99,7 +99,7 @@ export function RenameFile(hash, oldPath, newPath) {
  * @returns {$CancellablePromise<void>}
  */
 export function SetFilePriority(hash, fileIDs, priority) {
-    return $Call.ByID(1984806499, hash, fileIDs, priority);
+    return $Call.ByID(2708859876, hash, fileIDs, priority);
 }
 
 /**
@@ -109,7 +109,7 @@ export function SetFilePriority(hash, fileIDs, priority) {
  * @returns {$CancellablePromise<void>}
  */
 export function SetTorrentLocation(hash, location) {
-    return $Call.ByID(1731436990, hash, location);
+    return $Call.ByID(3908991547, hash, location);
 }
 
 // Private type creation functions

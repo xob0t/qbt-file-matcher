@@ -8,7 +8,7 @@
         AllowPromptForPassword="false">
     </Settings>
     <Installer
-        Path="qbittorrent-file-matcher.exe"
+        Path="qbt-file-matcher.exe"
         Arguments=""
         InstallLocation="C:\Program Files\My Company\My Product">
     </Installer>
@@ -18,7 +18,7 @@
         PublisherName="CN=My Company"
         PublisherDisplayName="My Company"
         Version="0.1.0.0"
-        PackageDescription="A qbittorrent-file-matcher application">
+        PackageDescription="A qbt-file-matcher application">
         <Capabilities>
             <Capability Name="runFullTrust" />
             
@@ -26,9 +26,9 @@
         <Applications>
             <Application
                 Id="com.example.qbittorrentfilematcher"
-                Description="A qbittorrent-file-matcher application"
+                Description="A qbt-file-matcher application"
                 DisplayName="My Product"
-                ExecutableName="qbittorrent-file-matcher.exe"
+                ExecutableName="qbt-file-matcher.exe"
                 EntryPoint="Windows.FullTrustApplication">
                 
             </Application>
@@ -43,11 +43,11 @@
             <Framework>false</Framework>
             <DisplayName>My Product</DisplayName>
             <PublisherDisplayName>My Company</PublisherDisplayName>
-            <Description>A qbittorrent-file-matcher application</Description>
+            <Description>A qbt-file-matcher application</Description>
             <Logo>Assets\AppIcon.png</Logo>
         </Properties>
     </PackageInformation>
-    <SaveLocation PackagePath="qbittorrent-file-matcher.msix" />
+    <SaveLocation PackagePath="qbt-file-matcher.msix" />
     <PackageIntegrity>
         <CertificatePath></CertificatePath>
     </PackageIntegrity>

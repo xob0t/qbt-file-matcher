@@ -1,22 +1,22 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import {
-  Item,
-  ItemContent,
-  ItemTitle,
-  ItemDescription,
-  ItemActions,
-  ItemGroup,
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemTitle,
 } from '@/components/ui/item'
-import { toast } from 'sonner'
-import { QBitService } from '../../bindings/qbittorrent-file-matcher/backend'
+import { Progress } from '@/components/ui/progress'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Spinner } from '@/components/ui/spinner'
 import { formatSize, getErrorMessage } from '@/lib/utils'
+import { useCallback, useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { QBitService } from '../../bindings/qbt-file-matcher/backend'
 import type { TorrentInfo } from '../App'
 
 interface TorrentListProps {

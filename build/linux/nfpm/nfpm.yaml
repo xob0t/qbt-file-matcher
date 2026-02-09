@@ -3,26 +3,26 @@
 #
 # The lines below are called `modelines`. See `:help modeline`
 
-name: "qbittorrent-file-matcher.exe"
+name: "qbt-file-matcher.exe"
 arch: ${GOARCH}
 platform: "linux"
 version: "0.1.0"
 section: "default"
 priority: "extra"
 maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
-description: "A qbittorrent-file-matcher application"
+description: "A qbt-file-matcher application"
 vendor: "My Company"
 homepage: "https://wails.io"
 license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/qbittorrent-file-matcher.exe"
-    dst: "/usr/local/bin/qbittorrent-file-matcher.exe"
+  - src: "./bin/qbt-file-matcher.exe"
+    dst: "/usr/local/bin/qbt-file-matcher.exe"
   - src: "./build/appicon.png"
-    dst: "/usr/share/icons/hicolor/128x128/apps/qbittorrent-file-matcher.exe.png"
-  - src: "./build/linux/qbittorrent-file-matcher.exe.desktop"
-    dst: "/usr/share/applications/qbittorrent-file-matcher.exe.desktop"
+    dst: "/usr/share/icons/hicolor/128x128/apps/qbt-file-matcher.exe.png"
+  - src: "./build/linux/qbt-file-matcher.exe.desktop"
+    dst: "/usr/share/applications/qbt-file-matcher.exe.desktop"
 
 # Default dependencies for Debian 12/Ubuntu 22.04+ with WebKit 4.1
 depends:
@@ -36,8 +36,8 @@ overrides:
     depends:
       - gtk3
       - webkit2gtk4.1
-  
-  # Arch Linux packages (WebKit 4.1)  
+
+  # Arch Linux packages (WebKit 4.1)
   archlinux:
     depends:
       - gtk3

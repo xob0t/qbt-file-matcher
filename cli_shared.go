@@ -6,7 +6,7 @@ import (
 	"os"
 	"slices"
 
-	"qbittorrent-file-matcher/backend"
+	"qbt-file-matcher/backend"
 )
 
 //go:embed build/windows/info.json
@@ -48,7 +48,7 @@ func runCLI() {
 		printCLIHelp()
 
 	case "version", "--version", "-v":
-		fmt.Printf("qbittorrent-file-matcher v%s\n", getAppVersion())
+		fmt.Printf("qbt-file-matcher v%s\n", getAppVersion())
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown command '%s'\n\n", command)
@@ -58,22 +58,22 @@ func runCLI() {
 }
 
 func printCLIHelp() {
-	fmt.Println("qbittorrent-file-matcher - Match torrent files with files on disk")
+	fmt.Println("qbt-file-matcher - Match torrent files with files on disk")
 	fmt.Println()
 	fmt.Println("Usage:")
-	fmt.Println("  qbittorrent-file-matcher              Launch GUI application")
-	fmt.Println("  qbittorrent-file-matcher <command>    Run CLI command")
+	fmt.Println("  qbt-file-matcher              Launch GUI application")
+	fmt.Println("  qbt-file-matcher <command>    Run CLI command")
 	fmt.Println()
 	fmt.Println("Commands:")
 	fmt.Println("  match       Match and rename torrent files")
 	fmt.Println("  help        Show this help message")
 	fmt.Println("  version     Show version information")
 	fmt.Println()
-	fmt.Println("Run 'qbittorrent-file-matcher <command> --help' for more information on a command")
+	fmt.Println("Run 'qbt-file-matcher <command> --help' for more information on a command")
 }
 
 func printMatchHelp() {
-	fmt.Println("Usage: qbittorrent-file-matcher match [flags]")
+	fmt.Println("Usage: qbt-file-matcher match [flags]")
 	fmt.Println()
 	fmt.Println("Match torrent files with files on disk and rename them in qBittorrent")
 	fmt.Println()
@@ -102,5 +102,5 @@ func printMatchHelp() {
 	fmt.Println("  Use --auto to skip prompts and auto-select the first match.")
 	fmt.Println()
 	fmt.Println("Example:")
-	fmt.Println("  qbittorrent-file-matcher match --url http://localhost:8080 --hash abc123 --path /downloads")
+	fmt.Println("  qbt-file-matcher match --url http://localhost:8080 --hash abc123 --path /downloads")
 }

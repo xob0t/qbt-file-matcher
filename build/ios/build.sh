@@ -2,7 +2,7 @@
 set -e
 
 # Build configuration
-APP_NAME="qbittorrent-file-matcher.exe"
+APP_NAME="qbt-file-matcher.exe"
 BUNDLE_ID="com.example.qbittorrentfilematcher"
 VERSION="0.1.0"
 BUILD_NUMBER="0.1.0"

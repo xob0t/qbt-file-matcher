@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"qbittorrent-file-matcher/backend"
+	"qbt-file-matcher/backend"
 )
 
 // CLI config for match command

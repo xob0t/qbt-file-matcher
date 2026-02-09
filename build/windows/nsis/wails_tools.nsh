@@ -5,7 +5,7 @@
 !include "FileFunc.nsh"
 
 !ifndef INFO_PROJECTNAME
-    !define INFO_PROJECTNAME "qbittorrent-file-matcher"
+    !define INFO_PROJECTNAME "qbt-file-matcher"
 !endif
 !ifndef INFO_COMPANYNAME
     !define INFO_COMPANYNAME "My Company"

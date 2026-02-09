@@ -1,4 +1,4 @@
-module qbittorrent-file-matcher
+module qbt-file-matcher
 
 go 1.25
 

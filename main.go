@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"qbittorrent-file-matcher/backend"
+	"qbt-file-matcher/backend"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )

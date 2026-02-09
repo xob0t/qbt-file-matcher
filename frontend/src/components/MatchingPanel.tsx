@@ -29,8 +29,8 @@ import {
 } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 import { Dialogs } from '@wailsio/runtime'
-import { QBitService, MatcherService } from '../../bindings/qbittorrent-file-matcher/backend'
-import type { TorrentFile, DiskFile, MatchInfo } from '../../bindings/qbittorrent-file-matcher/backend/models'
+import { QBitService, MatcherService } from '../../bindings/qbt-file-matcher/backend'
+import type { TorrentFile, DiskFile, MatchInfo } from '../../bindings/qbt-file-matcher/backend/models'
 import { formatSize, getErrorMessage } from '@/lib/utils'
 import type { TorrentInfo } from '../App'
 

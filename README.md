@@ -15,7 +15,7 @@ A desktop application that matches torrent files in qBittorrent with existing fi
 
 ### Download
 
-Download the latest release from the [Releases](https://github.com/username/qbittorrent-file-matcher/releases) page.
+Download the latest release from the [Releases](https://github.com/username/qbt-file-matcher/releases) page.
 
 ### Build from Source
 
@@ -27,8 +27,8 @@ Requirements:
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/qbittorrent-file-matcher.git
-cd qbittorrent-file-matcher
+git clone https://github.com/username/qbt-file-matcher.git
+cd qbt-file-matcher
 
 # Build GUI application
 wails3 build
@@ -53,7 +53,7 @@ wails3 task windows:build:cli
 
 ```bash
 # Basic usage
-qbittorrent-file-matcher-cli match \
+qbt-file-matcher-cli match \
   --url http://localhost:8080 \
   --username admin \
   --password secret \
@@ -64,10 +64,10 @@ qbittorrent-file-matcher-cli match \
 export QBT_URL=http://localhost:8080
 export QBT_USERNAME=admin
 export QBT_PASSWORD=secret
-qbittorrent-file-matcher-cli match --hash <torrent-hash> --path /path/to/files
+qbt-file-matcher-cli match --hash <torrent-hash> --path /path/to/files
 
 # Additional options
-qbittorrent-file-matcher-cli match \
+qbt-file-matcher-cli match \
   --url http://localhost:8080 \
   --hash <torrent-hash> \
   --path /path/to/files \

@@ -21,7 +21,7 @@ import * as $models from "./models.js";
  * @returns {$CancellablePromise<boolean>}
  */
 export function DirExists(path) {
-    return $Call.ByID(1916444002, path);
+    return $Call.ByID(92874191, path);
 }
 
 /**
@@ -30,7 +30,7 @@ export function DirExists(path) {
  * @returns {$CancellablePromise<$models.MatchResponse>}
  */
 export function FindMatches(req) {
-    return $Call.ByID(476527029, req).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(2723668576, req).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType0($result);
     }));
 }
@@ -41,7 +41,7 @@ export function FindMatches(req) {
  * @returns {$CancellablePromise<$models.RenameOp[]>}
  */
 export function GenRenames(req) {
-    return $Call.ByID(2833719546, req).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(1489809069, req).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType2($result);
     }));
 }
@@ -52,7 +52,7 @@ export function GenRenames(req) {
  * @returns {$CancellablePromise<$models.DiskFileInfo[]>}
  */
 export function ScanDir(path) {
-    return $Call.ByID(3958135217, path).then(/** @type {($result: any) => any} */(($result) => {
+    return $Call.ByID(3083563120, path).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType4($result);
     }));
 }
