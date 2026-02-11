@@ -27,7 +27,7 @@ Requirements:
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/qbt-file-matcher.git
+git clone https://github.com/xob0t/qbt-file-matcher.git
 cd qbt-file-matcher
 
 # Build GUI application
